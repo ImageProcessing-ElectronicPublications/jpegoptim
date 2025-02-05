@@ -33,9 +33,9 @@ mandir = @mandir@
 
 CC        = @CC@
 XCPPFLAGS = @CPPFLAGS@
-CFLAGS    = @CFLAGS@ $(XCPPFLAGS) $(DEFS)
+CFLAGS    = @CFLAGS@ $(XCPPFLAGS) $(DEFS) -I. -Isrc
 ifeq ($(CC),gcc)
-CFLAGS	 += -Wall -Wformat -Werror=format-security
+CFLAGS	 += -Wall -Wformat -Werror=format-security -I. -Isrc
 #CFLAGS  += -no-omit-frame-pointer -D_FORTIFY_SOURCE=2
 #CFLAGS	 += -fstack-protector --param=ssp-buffer-size=4 -fsanitize=address,undefined
 endif
@@ -57,24 +57,23 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 DIRNAME = $(shell basename `pwd`)
 DISTNAME  = $(PKGNAME)-$(Version)
 
-OBJS = $(PKGNAME).o jpegdest.o jpegsrc.o jpegmarker.o misc.o @GNUGETOPT@
+OBJS = src/$(PKGNAME).o src/jpegdest.o src/jpegsrc.o src/jpegmarker.o src/misc.o @GNUGETOPT@
 
 .PHONY: test
 
-all:	$(PKGNAME)
+all: $(PKGNAME)
 
-dssim.o:	dssim.c
-	$(CC) $(CFLAGS) -std=c99 -c
+src/dssim.o: src/dssim.c
+	$(CC) $(CFLAGS) -std=c99 -c -o $@
 
-$(PKGNAME):	$(OBJS)
-	$(CC) $(CFLAGS) -o $(PKGNAME) $(OBJS) $(LDFLAGS) $(LIBS)
-
+$(PKGNAME): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 strip:
 	for i in $(PKGNAME) ; do [ -x $$i ] && $(STRIP) $$i ; done
 
 clean:
-	rm -f *~ *.o core a.out make.log \#*\# $(PKGNAME) $(OBJS)
+	rm -f *~ src/*.o core a.out make.log \#*\# $(PKGNAME) $(OBJS)
 
 clean_all: clean
 	rm -f Makefile config.h config.log config.cache config.status

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
 
 project(jpegoptim C)
+include_directories(src)
 
 # LIBJPEG_INCLUDE_DIR and LIBJPEG_LIBRARY must both be specified if a custom libjpeg implementation is desired.
 option(WITH_ARITH "Enable arithmetic coding (if supported by the libjpeg implementation)" 1)
@@ -85,11 +86,11 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Source groups
 
 set(SOURCE_FILES
-    jpegoptim.c
-    jpegsrc.c
-    jpegdest.c
-    jpegmarker.c
-    misc.c
+    src/jpegoptim.c
+    src/jpegsrc.c
+    src/jpegdest.c
+    src/jpegmarker.c
+    src/misc.c
     )
 source_group("Source Files" FILES ${SOURCE_FILES})
 
@@ -466,13 +467,13 @@ endif()
 find_package(Python3 COMPONENTS Interpreter Development)
 
 if (Python3_FOUND)
-  enable_testing()
-  add_test(NAME unittests
-	 COMMAND ${Python3_EXECUTABLE} test.py
-	 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test
-	 )
+    enable_testing()
+    add_test(NAME unittests
+        COMMAND ${Python3_EXECUTABLE} test.py
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test
+        )
 
-  set_property(TEST unittests PROPERTY ENVIRONMENT "JPEGOPTIM=$<TARGET_FILE:jpegoptim>" "DEBUG=1")
+    set_property(TEST unittests PROPERTY ENVIRONMENT "JPEGOPTIM=$<TARGET_FILE:jpegoptim>" "DEBUG=1")
 endif()
 
 
